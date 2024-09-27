@@ -1,20 +1,18 @@
+const mongoose = require('mongoose');
 
-class Beer {
-    constructor(name, type, rating = null) {
-        this.name = name;
-        this.type = type;
-        this.ratings = rating ? [rating] : [];
-    }
+const BeerSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    type: { type: String, required: true },
+    ratings: { type: [Number], default: [] }
+});
 
-    get averageRating() {
-        if (this.ratings.length === 0) return 0;
-        const sum = this.ratings.reduce((acc, rating) => acc + rating, 0);
-        return Math.round(sum / this.ratings.length);
-    }
+BeerSchema.methods.averageRating = function() {
+    if (this.ratings.length === 0) return 0;
+    return (this.ratings.reduce((acc, rating) => acc + rating) / this.ratings.length).toFixed(1);
+};
 
-    addRating(rating) {
-        this.ratings.push(rating);
-    }
-}
+BeerSchema.methods.addRating = function(rating) {
+    this.ratings.push(rating);
+};
 
-module.exports = Beer;
+module.exports = mongoose.model('Beer', BeerSchema);
